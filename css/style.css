@@ -134,6 +134,18 @@ body {
 .instructions { color: var(--text-muted); line-height: 1.5; margin: 0 0 18px; }
 .instructions code { background: var(--bg-panel-alt); padding: 2px 6px; border-radius: 4px; font-family: var(--mono); color: var(--accent-strong); }
 
+.lesson-box {
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.lesson-label { margin: 0 0 6px; font-weight: 700; font-size: 0.85rem; color: var(--accent-strong); text-transform: uppercase; letter-spacing: 0.03em; }
+.lesson-body { margin: 0; line-height: 1.6; color: var(--text); }
+.lesson-body code { background: rgba(255, 255, 255, 0.08); padding: 2px 6px; border-radius: 4px; font-family: var(--mono); color: var(--accent-strong); }
+
 .code-block {
   background: #0b0f19;
   border: 1px solid var(--border);

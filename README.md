@@ -6,14 +6,16 @@ CodeQuest est un jeu web gratuit et open source pour **apprendre à coder en HTM
 
 ## Comment ça marche
 
-Le jeu propose 4 parcours, à débloquer dans l'ordre :
+Le jeu propose 4 parcours de 12 défis chacun (48 au total), à débloquer dans l'ordre :
 
 | Parcours | Contenu | Format des défis |
 |---|---|---|
-| 🧱 HTML | Balises, structure, formulaires | Écris du HTML, testé en direct sur le DOM |
-| 🎨 CSS | Couleurs, mise en page, Flexbox | Écris du CSS, testé via les styles calculés |
-| ⚡ JavaScript | Fonctions, boucles, logique | Écris une fonction, testée avec plusieurs cas |
-| 🐘 PHP | Variables, boucles, comparaisons | Questions à choix multiples (voir pourquoi ci-dessous) |
+| 🧱 HTML | Balises, listes, tableaux, formulaires, conteneurs | Écris du HTML, testé en direct sur le DOM |
+| 🎨 CSS | Couleurs, boîte de modèle, bordures, Flexbox | Écris du CSS, testé via les styles calculés |
+| ⚡ JavaScript | Fonctions, conditions, boucles, tableaux | Écris une fonction, testée avec plusieurs cas |
+| 🐘 PHP | Variables, types, boucles, tableaux, fonctions | Questions à choix multiples (voir pourquoi ci-dessous) |
+
+Chaque défi commence par une courte **leçon** (📘, avec explication et exemple) avant l'exercice : les parcours sont construits pour introduire un seul concept nouveau à la fois, en s'appuyant sur les précédents.
 
 Chaque défi réussi rapporte de l'XP, affichée dans la barre en haut de page. Un parcours se débloque une fois tous les défis du parcours précédent terminés. La progression est sauvegardée automatiquement dans le navigateur (`localStorage`).
 
@@ -66,7 +68,7 @@ php/api/             Backend optionnel (sauvegarde de progression)
 
 ## Ajouter un nouveau défi
 
-Tous les défis sont définis dans [`js/data.js`](js/data.js), dans le tableau `CODEQUEST_DATA.tracks`. Chaque parcours a un tableau `challenges`, avec un `type` (`html`, `css`, `js` ou `quiz`) qui détermine la façon dont il est validé — voir les exemples existants et [`js/app.js`](js/app.js) pour le détail de la validation.
+Tous les défis sont définis dans [`js/data.js`](js/data.js), dans le tableau `CODEQUEST_DATA.tracks`. Chaque parcours a un tableau `challenges`, avec un `type` (`html`, `css`, `js` ou `quiz`) qui détermine la façon dont il est validé, et un champ `lesson` (courte explication + exemple) affiché avant l'énoncé — voir les exemples existants et [`js/app.js`](js/app.js) pour le détail de la validation.
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour proposer une contribution.
 

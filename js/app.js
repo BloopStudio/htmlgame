@@ -164,9 +164,20 @@
     header.className = "challenge-header";
     header.innerHTML = `
       <h2>${track.icon} ${challenge.title}</h2>
-      <p class="instructions">${challenge.instructions || ""}</p>
     `;
     challengeEl.appendChild(header);
+
+    if (challenge.lesson) {
+      const lessonBox = document.createElement("div");
+      lessonBox.className = "lesson-box";
+      lessonBox.innerHTML = `<p class="lesson-label">📘 Leçon</p><div class="lesson-body">${challenge.lesson}</div>`;
+      challengeEl.appendChild(lessonBox);
+    }
+
+    const instructionsEl = document.createElement("p");
+    instructionsEl.className = "instructions";
+    instructionsEl.innerHTML = challenge.instructions || "";
+    challengeEl.appendChild(instructionsEl);
 
     if (challenge.type === "quiz") {
       renderQuiz(challenge);

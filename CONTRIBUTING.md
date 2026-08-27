@@ -43,8 +43,11 @@ adapté :
 - `"quiz"` : question à choix multiples (utilisé pour PHP, non exécutable sur
   GitHub Pages), avec `code`, `question`, `options` et l'index `correct`.
 
-Regarde les défis existants comme modèles, et garde des instructions et des
-indices clairs, adaptés à un public débutant.
+Chaque défi doit aussi avoir un champ `lesson` : une courte explication (2-3
+phrases) avec un exemple de code, qui introduit **un seul concept nouveau**
+en s'appuyant sur ce qui a déjà été enseigné dans les défis précédents du
+même parcours. Regarde les défis existants comme modèles, et garde des
+instructions et des indices clairs, adaptés à un public débutant.
 
 ## Style de code
 
