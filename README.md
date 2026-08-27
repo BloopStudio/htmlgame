@@ -1,4 +1,6 @@
-# 🕹️ CodeQuest
+<img src="assets/logo.svg" alt="Logo CodeQuest" width="72" height="72">
+
+# CodeQuest
 
 CodeQuest est un jeu web gratuit et open source pour **apprendre à coder en HTML, CSS, JavaScript et PHP**, en s'amusant. Écris du code directement dans le navigateur, obtiens un retour instantané, gagne de l'XP et débloque le parcours suivant.
 

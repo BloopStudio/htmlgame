@@ -43,7 +43,7 @@ body {
 }
 
 .brand { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 700; }
-.brand-icon { font-size: 1.6rem; }
+.brand-icon { width: 32px; height: 32px; border-radius: 8px; display: block; }
 
 .xp-bar { display: flex; align-items: center; gap: 12px; min-width: 220px; }
 .xp-label { font-size: 0.9rem; color: var(--text-muted); white-space: nowrap; }
