@@ -17,7 +17,9 @@ const CODEQUEST_DATA = {
     {
       id: "html",
       title: "HTML",
+      worldName: "Le Village des Balises",
       icon: "🧱",
+      theme: "#e0964f",
       pitch: "Structure une page web, une balise à la fois.",
       challenges: [
         {
@@ -268,7 +270,9 @@ const CODEQUEST_DATA = {
     {
       id: "css",
       title: "CSS",
+      worldName: "La Forêt des Couleurs",
       icon: "🎨",
+      theme: "#3ecf8e",
       pitch: "Mets en forme et en couleur tes pages.",
       challenges: [
         {
@@ -508,7 +512,9 @@ const CODEQUEST_DATA = {
     {
       id: "js",
       title: "JavaScript",
+      worldName: "La Montagne de la Logique",
       icon: "⚡",
+      theme: "#f5c542",
       pitch: "Donne vie à tes pages avec la logique et l'interactivité.",
       challenges: [
         {
@@ -729,7 +735,9 @@ const CODEQUEST_DATA = {
     {
       id: "php",
       title: "PHP",
+      worldName: "La Citadelle du Serveur",
       icon: "🐘",
+      theme: "#5b8def",
       pitch:
         "Découvre le langage serveur le plus utilisé du Web (en questions, car GitHub Pages ne peut pas exécuter de PHP).",
       challenges: [
@@ -897,4 +905,106 @@ const CODEQUEST_DATA = {
       ],
     },
   ],
+};
+
+/**
+ * Badges à débloquer, affichés dans le panneau "🏅 Badges". Chaque badge a un
+ * test(progress) qui reçoit l'objet de progression (voir js/app.js) et
+ * renvoie true s'il est débloqué. CODEQUEST_DATA est accessible car ce
+ * fichier est chargé en un seul script (pas de modules).
+ */
+function codequestTrackFullyDone(progress, trackId) {
+  const track = CODEQUEST_DATA.tracks.find((t) => t.id === trackId);
+  return track.challenges.every((c) => progress.completed[c.id]);
+}
+
+function codequestTrackHasNoMistake(progress, trackId) {
+  const track = CODEQUEST_DATA.tracks.find((t) => t.id === trackId);
+  return track.challenges.every((c) => !(progress.wrongAttempts && progress.wrongAttempts[c.id] > 0));
+}
+
+const CODEQUEST_BADGES = [
+  {
+    id: "premier-pas",
+    icon: "🥇",
+    title: "Premier pas",
+    description: "Réussis ton tout premier défi.",
+    test: (progress) => Object.keys(progress.completed).length >= 1,
+  },
+  {
+    id: "batisseur-html",
+    icon: "🧱",
+    title: "Bâtisseur",
+    description: "Termine Le Village des Balises (HTML).",
+    test: (progress) => codequestTrackFullyDone(progress, "html"),
+  },
+  {
+    id: "artiste-css",
+    icon: "🎨",
+    title: "Artiste",
+    description: "Termine La Forêt des Couleurs (CSS).",
+    test: (progress) => codequestTrackFullyDone(progress, "css"),
+  },
+  {
+    id: "logicien-js",
+    icon: "⚡",
+    title: "Logicien·ne",
+    description: "Termine La Montagne de la Logique (JavaScript).",
+    test: (progress) => codequestTrackFullyDone(progress, "js"),
+  },
+  {
+    id: "sage-php",
+    icon: "🐘",
+    title: "Sage",
+    description: "Termine La Citadelle du Serveur (PHP).",
+    test: (progress) => codequestTrackFullyDone(progress, "php"),
+  },
+  {
+    id: "serie-10",
+    icon: "🔥",
+    title: "Série de 10",
+    description: "Enchaîne 10 bonnes réponses d'affilée.",
+    test: (progress) => (progress.bestStreak || 0) >= 10,
+  },
+  {
+    id: "sans-faute",
+    icon: "🎯",
+    title: "Sans-faute",
+    description: "Termine un royaume sans te tromper une seule fois.",
+    test: (progress) =>
+      CODEQUEST_DATA.tracks.some(
+        (t) => codequestTrackFullyDone(progress, t.id) && codequestTrackHasNoMistake(progress, t.id)
+      ),
+  },
+  {
+    id: "legende",
+    icon: "🏆",
+    title: "Légende de CodeQuest",
+    description: "Termine les 4 royaumes.",
+    test: (progress) => CODEQUEST_DATA.tracks.every((t) => codequestTrackFullyDone(progress, t.id)),
+  },
+];
+
+const CODEQUEST_MASCOT = {
+  name: "Pixel",
+  icon: "🧙",
+  success: [
+    "Bien joué, continue comme ça !",
+    "Exactement ça ! Tu progresses vite.",
+    "Nickel ! On enchaîne ?",
+    "Tu deviens redoutable en code !",
+    "Parfait, une ligne de plus dans ton grimoire !",
+  ],
+  fail: [
+    "Presque ! Jette un œil à l'indice 💡",
+    "Pas grave, on réessaie !",
+    "Chaque erreur t'apprend quelque chose, courage !",
+    "Relis bien l'énoncé, tu y es presque.",
+  ],
+  kingdomComplete: [
+    "Royaume conquis ! Quel talent !",
+    "Incroyable, tu as tout terminé ici !",
+  ],
+  allComplete: "Tu as conquis les 4 royaumes de CodeQuest. Tu es une véritable légende ! 🏆",
+  badge: "Nouveau badge débloqué !",
 };

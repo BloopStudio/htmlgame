@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CodeQuest — Apprends à coder en HTML, CSS, JS et PHP</title>
-<meta name="description" content="Jeu interactif gratuit pour apprendre à coder en HTML, CSS, JavaScript et PHP directement dans le navigateur.">
+<meta name="description" content="Jeu d'aventure interactif et gratuit pour apprendre à coder en HTML, CSS, JavaScript et PHP directement dans le navigateur.">
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -14,15 +14,25 @@
     <img class="brand-icon" src="assets/logo.svg" alt="Logo CodeQuest" width="32" height="32">
     <span class="brand-name">CodeQuest</span>
   </div>
-  <div class="xp-bar" title="Expérience totale">
-    <span class="xp-label">XP : <strong id="xp-value">0</strong></span>
-    <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
+  <div class="header-right">
+    <div class="xp-bar" title="Expérience totale">
+      <span class="xp-label">XP : <strong id="xp-value">0</strong></span>
+      <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
+    </div>
+    <button id="streak-badge" class="icon-btn" type="button" title="Série de bonnes réponses">🔥 <span id="streak-value">0</span></button>
+    <button id="badges-btn" class="icon-btn" type="button" title="Voir mes badges">🏅 <span id="badges-count">0</span>/<span id="badges-total">0</span></button>
+    <button id="mute-btn" class="icon-btn" type="button" title="Activer / couper le son">🔊</button>
   </div>
 </header>
 
 <main class="app-main">
-  <nav id="sidebar" class="sidebar" aria-label="Parcours d'apprentissage"></nav>
-  <section id="challenge" class="challenge" aria-live="polite"></section>
+  <section id="map-view" class="map-view"></section>
+  <section id="challenge-view" class="challenge-view hidden">
+    <div class="challenge-topbar">
+      <button id="back-to-map" type="button" class="btn btn-ghost">← Retour à la carte</button>
+    </div>
+    <div id="challenge" class="challenge" aria-live="polite"></div>
+  </section>
 </main>
 
 <footer class="app-footer">
@@ -34,7 +44,26 @@
   </p>
 </footer>
 
+<div id="mascot" class="mascot hidden">
+  <span class="mascot-icon">🧙</span>
+  <div class="mascot-bubble" id="mascot-bubble"></div>
+</div>
+
+<div id="badges-modal" class="modal hidden">
+  <div class="modal-backdrop" id="badges-backdrop"></div>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>🏅 Tes badges</h2>
+      <button id="close-badges" type="button" class="btn btn-ghost" aria-label="Fermer">✕</button>
+    </div>
+    <div id="badges-grid" class="badges-grid"></div>
+  </div>
+</div>
+
+<div id="confetti-layer" class="confetti-layer" aria-hidden="true"></div>
+
 <script src="js/data.js"></script>
+<script src="js/sound.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,28 +1,43 @@
 /**
  * CodeQuest - moteur du jeu.
- * Gère la navigation entre parcours/défis, l'éditeur, la validation
- * (via iframes sandboxées) et la sauvegarde de la progression.
+ * Gère la carte des royaumes, la navigation vers les défis, l'éditeur, la
+ * validation (via iframes sandboxées), les badges, la mascotte et les
+ * effets (sons, confettis), ainsi que la sauvegarde de la progression.
  */
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "codequest_progress_v1";
+  const STORAGE_KEY = "codequest_progress_v2";
   const TOKEN_KEY = "codequest_token_v1";
 
   const state = {
+    mapSubview: "overview", // "overview" | "path"
+    activeTrackId: null,
     trackIndex: 0,
     challengeIndex: 0,
     progress: loadProgress(),
   };
 
+  function defaultProgress() {
+    return { completed: {}, xp: 0, streak: 0, bestStreak: 0, wrongAttempts: {}, badgesAwarded: [] };
+  }
+
   function loadProgress() {
+    const defaults = defaultProgress();
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        return Object.assign({}, defaults, saved, {
+          completed: Object.assign({}, defaults.completed, saved.completed),
+          wrongAttempts: Object.assign({}, defaults.wrongAttempts, saved.wrongAttempts),
+          badgesAwarded: saved.badgesAwarded || [],
+        });
+      }
     } catch (e) {
       /* localStorage indisponible ou corrompu : on repart de zéro */
     }
-    return { completed: {}, xp: 0 };
+    return defaults;
   }
 
   function saveProgress() {
@@ -43,8 +58,8 @@
     return token;
   }
 
-  // Le backend PHP est optionnel : il n'existe que si le site est servi par un
-  // vrai serveur PHP (ex: `php -S localhost:8000`). Sur GitHub Pages cet appel
+  // Le backend PHP est optionnel : il n'existe que si le site est servi par
+  // un vrai serveur PHP (ex: `php -S localhost:8000`). Sur GitHub Pages cet appel
   // échoue silencieusement et le jeu continue avec localStorage uniquement.
   function syncToServer() {
     fetch("php/api/save_progress.php", {
@@ -58,14 +73,6 @@
     return !!state.progress.completed[id];
   }
 
-  function markChallengeDone(challenge) {
-    if (!isChallengeDone(challenge.id)) {
-      state.progress.completed[challenge.id] = true;
-      state.progress.xp += challenge.xp || 0;
-      saveProgress();
-    }
-  }
-
   function isTrackUnlocked(trackIdx) {
     if (trackIdx === 0) return true;
     const prev = CODEQUEST_DATA.tracks[trackIdx - 1];
@@ -76,75 +83,9 @@
     return track.challenges.filter((c) => isChallengeDone(c.id)).length;
   }
 
-  // --- Rendu ---
-
-  const sidebarEl = document.getElementById("sidebar");
-  const challengeEl = document.getElementById("challenge");
-  const xpValueEl = document.getElementById("xp-value");
-  const xpFillEl = document.getElementById("xp-fill");
-
-  function totalXp() {
-    let total = 0;
-    CODEQUEST_DATA.tracks.forEach((t) => t.challenges.forEach((c) => (total += c.xp || 0)));
-    return total;
-  }
-
-  function renderXp() {
-    xpValueEl.textContent = state.progress.xp;
-    const pct = Math.min(100, Math.round((state.progress.xp / totalXp()) * 100));
-    xpFillEl.style.width = pct + "%";
-  }
-
-  function renderSidebar() {
-    sidebarEl.innerHTML = "";
-    CODEQUEST_DATA.tracks.forEach((track, tIdx) => {
-      const unlocked = isTrackUnlocked(tIdx);
-      const done = trackCompletionCount(track);
-      const trackEl = document.createElement("div");
-      trackEl.className = "track" + (unlocked ? "" : " locked") + (tIdx === state.trackIndex ? " active" : "");
-
-      const header = document.createElement("button");
-      header.className = "track-header";
-      header.type = "button";
-      header.disabled = !unlocked;
-      header.innerHTML = `
-        <span class="track-icon">${track.icon}</span>
-        <span class="track-title">${track.title}</span>
-        <span class="track-count">${done}/${track.challenges.length}</span>
-        ${unlocked ? "" : '<span class="lock" title="Termine le parcours précédent pour débloquer">🔒</span>'}
-      `;
-      header.addEventListener("click", () => {
-        if (!unlocked) return;
-        state.trackIndex = tIdx;
-        state.challengeIndex = firstUnfinishedIndex(track);
-        renderAll();
-      });
-      trackEl.appendChild(header);
-
-      if (tIdx === state.trackIndex && unlocked) {
-        const list = document.createElement("ul");
-        list.className = "challenge-list";
-        track.challenges.forEach((c, cIdx) => {
-          const li = document.createElement("li");
-          li.className = cIdx === state.challengeIndex ? "current" : "";
-          const done = isChallengeDone(c.id);
-          li.innerHTML = `<button type="button">${done ? "✅" : "▫️"} ${c.title}</button>`;
-          li.querySelector("button").addEventListener("click", () => {
-            state.challengeIndex = cIdx;
-            renderAll();
-          });
-          list.appendChild(li);
-        });
-        trackEl.appendChild(list);
-      }
-
-      sidebarEl.appendChild(trackEl);
-    });
-  }
-
   function firstUnfinishedIndex(track) {
     const idx = track.challenges.findIndex((c) => !isChallengeDone(c.id));
-    return idx === -1 ? 0 : idx;
+    return idx === -1 ? track.challenges.length - 1 : idx;
   }
 
   function currentTrack() {
@@ -155,6 +96,154 @@
     return currentTrack().challenges[state.challengeIndex];
   }
 
+  function totalXp() {
+    let total = 0;
+    CODEQUEST_DATA.tracks.forEach((t) => t.challenges.forEach((c) => (total += c.xp || 0)));
+    return total;
+  }
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  // --- Éléments du DOM ---
+
+  const mapViewEl = document.getElementById("map-view");
+  const challengeViewEl = document.getElementById("challenge-view");
+  const challengeEl = document.getElementById("challenge");
+
+  // --- En-tête (XP, série, badges, son) ---
+
+  function renderHeader() {
+    document.getElementById("xp-value").textContent = state.progress.xp;
+    const pct = Math.min(100, Math.round((state.progress.xp / totalXp()) * 100));
+    document.getElementById("xp-fill").style.width = pct + "%";
+    document.getElementById("streak-value").textContent = state.progress.streak || 0;
+    const earnedCount = CODEQUEST_BADGES.filter((b) => b.test(state.progress)).length;
+    document.getElementById("badges-count").textContent = earnedCount;
+    document.getElementById("badges-total").textContent = CODEQUEST_BADGES.length;
+    document.getElementById("mute-btn").textContent = CodeQuestSound.isMuted() ? "🔇" : "🔊";
+  }
+
+  // --- Vue carte ---
+
+  function showMapView() {
+    challengeViewEl.classList.add("hidden");
+    mapViewEl.classList.remove("hidden");
+    renderHeader();
+    renderMap();
+  }
+
+  function renderMap() {
+    if (state.mapSubview === "path" && state.activeTrackId) {
+      renderPathView(state.activeTrackId);
+    } else {
+      renderKingdomsOverview();
+    }
+  }
+
+  function renderKingdomsOverview() {
+    mapViewEl.innerHTML = "";
+
+    const intro = document.createElement("div");
+    intro.className = "map-intro";
+    intro.innerHTML = "<h1>🗺️ La carte de CodeQuest</h1><p>Explore les royaumes dans l'ordre pour apprendre à coder, un défi à la fois.</p>";
+    mapViewEl.appendChild(intro);
+
+    const grid = document.createElement("div");
+    grid.className = "kingdoms-grid";
+
+    CODEQUEST_DATA.tracks.forEach((track, idx) => {
+      const unlocked = isTrackUnlocked(idx);
+      const done = trackCompletionCount(track);
+      const total = track.challenges.length;
+
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "kingdom-card" + (unlocked ? "" : " locked") + (done === total ? " complete" : "");
+      card.style.setProperty("--kingdom-color", track.theme);
+      card.disabled = !unlocked;
+      card.innerHTML = `
+        <span class="kingdom-icon">${track.icon}</span>
+        <h3>${track.worldName}</h3>
+        <p class="kingdom-pitch">${track.title} — ${track.pitch}</p>
+        <div class="kingdom-progress-track"><div class="kingdom-progress-fill" style="width:${Math.round((done / total) * 100)}%"></div></div>
+        <span class="kingdom-count">${unlocked ? `${done}/${total}` : "🔒 Verrouillé"}</span>
+      `;
+      card.addEventListener("click", () => {
+        if (!unlocked) return;
+        CodeQuestSound.click();
+        state.activeTrackId = track.id;
+        state.mapSubview = "path";
+        renderMap();
+      });
+      grid.appendChild(card);
+    });
+
+    mapViewEl.appendChild(grid);
+  }
+
+  function renderPathView(trackId) {
+    const trackIdx = CODEQUEST_DATA.tracks.findIndex((t) => t.id === trackId);
+    const track = CODEQUEST_DATA.tracks[trackIdx];
+    mapViewEl.innerHTML = "";
+
+    const header = document.createElement("div");
+    header.className = "path-header";
+    header.style.setProperty("--kingdom-color", track.theme);
+    header.innerHTML = `
+      <button type="button" class="btn btn-ghost" id="back-to-kingdoms">← Royaumes</button>
+      <h2>${track.icon} ${track.worldName}</h2>
+      <p class="path-pitch">${track.pitch}</p>
+    `;
+    mapViewEl.appendChild(header);
+    header.querySelector("#back-to-kingdoms").addEventListener("click", () => {
+      CodeQuestSound.click();
+      state.mapSubview = "overview";
+      renderMap();
+    });
+
+    const nextIdx = firstUnfinishedIndex(track);
+    const path = document.createElement("div");
+    path.className = "path";
+    path.style.setProperty("--kingdom-color", track.theme);
+
+    track.challenges.forEach((challenge, idx) => {
+      const done = isChallengeDone(challenge.id);
+      const isCurrent = !done && idx === nextIdx;
+      const isLocked = !done && idx > nextIdx;
+      const align = ["left", "center", "right"][idx % 3];
+
+      const node = document.createElement("button");
+      node.type = "button";
+      node.className = "path-node align-" + align + (done ? " done" : "") + (isCurrent ? " current" : "") + (isLocked ? " locked" : "");
+      node.disabled = isLocked;
+      node.innerHTML = `
+        <span class="node-circle">${done ? "✅" : isCurrent ? "🧙" : "🔒"}</span>
+        <span class="node-title">${challenge.title}</span>
+      `;
+      node.addEventListener("click", () => {
+        if (isLocked) return;
+        CodeQuestSound.click();
+        showChallengeView(trackIdx, idx);
+      });
+      path.appendChild(node);
+    });
+
+    mapViewEl.appendChild(path);
+  }
+
+  // --- Vue défi ---
+
+  function showChallengeView(trackIdx, challengeIdx) {
+    state.trackIndex = trackIdx;
+    state.challengeIndex = challengeIdx;
+    mapViewEl.classList.add("hidden");
+    challengeViewEl.classList.remove("hidden");
+    renderHeader();
+    renderChallenge();
+  }
+
   function renderChallenge() {
     const track = currentTrack();
     const challenge = currentChallenge();
@@ -162,9 +251,7 @@
 
     const header = document.createElement("div");
     header.className = "challenge-header";
-    header.innerHTML = `
-      <h2>${track.icon} ${challenge.title}</h2>
-    `;
+    header.innerHTML = `<h2>${track.icon} ${challenge.title}</h2>`;
     challengeEl.appendChild(header);
 
     if (challenge.lesson) {
@@ -484,77 +571,228 @@
     if (!resultEl) return;
     resultEl.className = "result " + (pass ? "pass" : "fail");
     resultEl.textContent = message;
+    if (!pass) {
+      state.progress.wrongAttempts[currentChallenge().id] = (state.progress.wrongAttempts[currentChallenge().id] || 0) + 1;
+    }
   }
+
+  function clearActionArea() {
+    const existing = document.getElementById("post-actions");
+    if (existing) existing.remove();
+  }
+
+  function renderNextChallengeActions() {
+    clearActionArea();
+    const track = currentTrack();
+    const hasNextChallenge = state.challengeIndex < track.challenges.length - 1;
+    if (!hasNextChallenge) return;
+
+    const wrap = document.createElement("div");
+    wrap.id = "post-actions";
+    wrap.className = "post-actions";
+
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "btn btn-primary";
+    nextBtn.textContent = "Défi suivant →";
+    nextBtn.addEventListener("click", () => {
+      CodeQuestSound.click();
+      showChallengeView(state.trackIndex, state.challengeIndex + 1);
+    });
+    wrap.appendChild(nextBtn);
+
+    const mapBtn = document.createElement("button");
+    mapBtn.type = "button";
+    mapBtn.className = "btn btn-ghost";
+    mapBtn.textContent = "🗺️ Carte";
+    mapBtn.addEventListener("click", () => {
+      CodeQuestSound.click();
+      state.activeTrackId = track.id;
+      state.mapSubview = "path";
+      showMapView();
+    });
+    wrap.appendChild(mapBtn);
+
+    challengeEl.appendChild(wrap);
+  }
+
+  function renderKingdomCompleteAction(track) {
+    clearActionArea();
+    const trackIdx = CODEQUEST_DATA.tracks.indexOf(track);
+    const hasNextTrack = trackIdx < CODEQUEST_DATA.tracks.length - 1;
+
+    const banner = document.createElement("div");
+    banner.id = "post-actions";
+    banner.className = "kingdom-banner";
+    banner.style.setProperty("--kingdom-color", track.theme);
+    banner.innerHTML = `<p class="kingdom-banner-title">🎉 ${track.worldName} conquis !</p>`;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-primary";
+    btn.textContent = hasNextTrack ? "🗺️ Vers le royaume suivant" : "🏆 Voir mes badges";
+    btn.addEventListener("click", () => {
+      CodeQuestSound.click();
+      state.mapSubview = "overview";
+      showMapView();
+      if (!hasNextTrack) openBadgesModal();
+    });
+    banner.appendChild(btn);
+    challengeEl.appendChild(banner);
+  }
+
+  // --- Mascotte ---
+
+  let mascotTimeout;
+  function showMascotMessage(text, mood) {
+    const mascot = document.getElementById("mascot");
+    const bubble = document.getElementById("mascot-bubble");
+    bubble.textContent = text;
+    mascot.classList.remove("hidden", "mood-success", "mood-fail", "mood-kingdom", "mood-badge");
+    mascot.classList.add("mood-" + (mood || "success"), "show");
+    clearTimeout(mascotTimeout);
+    mascotTimeout = setTimeout(() => mascot.classList.remove("show"), 4000);
+  }
+
+  // --- Confettis ---
+
+  function burstConfetti(count) {
+    const layer = document.getElementById("confetti-layer");
+    const colors = ["#5b8def", "#3ecf8e", "#f5c542", "#ef5b6b", "#7aa4f7"];
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement("span");
+      piece.className = "confetti-piece";
+      piece.style.left = Math.random() * 100 + "vw";
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = Math.random() * 0.25 + "s";
+      piece.style.setProperty("--rot", Math.random() * 360 + "deg");
+      piece.addEventListener("animationend", () => piece.remove());
+      layer.appendChild(piece);
+    }
+  }
+
+  // --- Badges ---
+
+  function checkNewBadges() {
+    const earnedIds = CODEQUEST_BADGES.filter((b) => b.test(state.progress)).map((b) => b.id);
+    const already = state.progress.badgesAwarded || [];
+    const newOnes = CODEQUEST_BADGES.filter((b) => earnedIds.includes(b.id) && !already.includes(b.id));
+    if (newOnes.length > 0) {
+      state.progress.badgesAwarded = earnedIds;
+      saveProgress();
+    }
+    return newOnes;
+  }
+
+  function openBadgesModal() {
+    const grid = document.getElementById("badges-grid");
+    grid.innerHTML = "";
+    CODEQUEST_BADGES.forEach((badge) => {
+      const earned = badge.test(state.progress);
+      const card = document.createElement("div");
+      card.className = "badge-card" + (earned ? " earned" : "");
+      card.innerHTML = `
+        <span class="badge-icon">${badge.icon}</span>
+        <h4>${badge.title}</h4>
+        <p>${badge.description}</p>
+      `;
+      grid.appendChild(card);
+    });
+    document.getElementById("badges-modal").classList.remove("hidden");
+  }
+
+  function closeBadgesModal() {
+    document.getElementById("badges-modal").classList.add("hidden");
+  }
+
+  // --- Résolution d'un défi ---
 
   function handleOutcome(pass, challenge, message) {
     showResult(pass, message);
-    if (pass) {
-      const alreadyDone = isChallengeDone(challenge.id);
-      markChallengeDone(challenge);
-      if (!alreadyDone) {
-        showXpToast(challenge.xp);
-      }
-      renderSidebar();
-      renderXp();
-      showNextButton();
+
+    if (!pass) {
+      CodeQuestSound.fail();
+      state.progress.streak = 0;
+      saveProgress();
+      renderHeader();
+      showMascotMessage(pickRandom(CODEQUEST_MASCOT.fail), "fail");
+      return;
+    }
+
+    CodeQuestSound.success();
+    state.progress.streak = (state.progress.streak || 0) + 1;
+    state.progress.bestStreak = Math.max(state.progress.bestStreak || 0, state.progress.streak);
+
+    const track = currentTrack();
+    const wasTrackDoneBefore = trackCompletionCount(track) === track.challenges.length;
+    const isNewCompletion = !isChallengeDone(challenge.id);
+    if (isNewCompletion) {
+      state.progress.completed[challenge.id] = true;
+      state.progress.xp += challenge.xp || 0;
+    }
+    saveProgress();
+
+    const newBadges = checkNewBadges();
+    renderHeader();
+
+    const trackDoneNow = trackCompletionCount(track) === track.challenges.length;
+    const justFinishedTrack = isNewCompletion && !wasTrackDoneBefore && trackDoneNow;
+
+    if (newBadges.length > 0) {
+      showMascotMessage(`${CODEQUEST_MASCOT.badge} ${newBadges.map((b) => b.icon + " " + b.title).join(", ")}`, "badge");
+      CodeQuestSound.unlock();
+    } else if (justFinishedTrack) {
+      showMascotMessage(pickRandom(CODEQUEST_MASCOT.kingdomComplete), "kingdom");
+    } else if (isNewCompletion) {
+      showMascotMessage(pickRandom(CODEQUEST_MASCOT.success), "success");
+    }
+
+    if (justFinishedTrack) {
+      CodeQuestSound.kingdomComplete();
+      burstConfetti(60);
+      renderKingdomCompleteAction(track);
+    } else {
+      burstConfetti(newBadges.length > 0 ? 40 : 18);
+      renderNextChallengeActions();
     }
   }
 
-  function showXpToast(xp) {
-    const toast = document.createElement("div");
-    toast.className = "xp-toast";
-    toast.textContent = `+${xp} XP`;
-    document.body.appendChild(toast);
-    requestAnimationFrame(() => toast.classList.add("show"));
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 1400);
-  }
+  // --- Câblage de l'en-tête et des modales ---
 
-  function showNextButton() {
-    if (document.getElementById("next-btn")) return;
+  document.getElementById("back-to-map").addEventListener("click", () => {
+    CodeQuestSound.click();
     const track = currentTrack();
-    const hasNextChallenge = state.challengeIndex < track.challenges.length - 1;
-    const hasNextTrack = state.trackIndex < CODEQUEST_DATA.tracks.length - 1;
-    if (!hasNextChallenge && !hasNextTrack) return;
+    state.activeTrackId = track.id;
+    state.mapSubview = "path";
+    showMapView();
+  });
 
-    const btn = document.createElement("button");
-    btn.id = "next-btn";
-    btn.type = "button";
-    btn.className = "btn btn-primary next-btn";
-    btn.textContent = hasNextChallenge ? "Défi suivant →" : "Parcours suivant →";
-    btn.addEventListener("click", () => {
-      if (hasNextChallenge) {
-        state.challengeIndex++;
-      } else if (hasNextTrack) {
-        state.trackIndex++;
-        state.challengeIndex = 0;
-      }
-      renderAll();
-    });
-    challengeEl.appendChild(btn);
-  }
+  document.getElementById("badges-btn").addEventListener("click", () => {
+    CodeQuestSound.click();
+    openBadgesModal();
+  });
+  document.getElementById("close-badges").addEventListener("click", closeBadgesModal);
+  document.getElementById("badges-backdrop").addEventListener("click", closeBadgesModal);
 
-  function renderAll() {
-    renderSidebar();
-    renderChallenge();
-    renderXp();
-  }
+  document.getElementById("mute-btn").addEventListener("click", () => {
+    CodeQuestSound.toggleMute();
+    renderHeader();
+  });
 
-  // Point de départ : reprend la première épreuve non terminée du premier
-  // parcours débloqué, pour retomber pile là où le joueur s'était arrêté.
+  // --- Démarrage ---
+
   function initState() {
-    let target = 0;
+    let current = CODEQUEST_DATA.tracks[0];
     for (let i = 0; i < CODEQUEST_DATA.tracks.length; i++) {
       if (!isTrackUnlocked(i)) break;
-      target = i;
-      if (trackCompletionCount(CODEQUEST_DATA.tracks[i]) < CODEQUEST_DATA.tracks[i].challenges.length) break;
+      current = CODEQUEST_DATA.tracks[i];
+      if (trackCompletionCount(current) < current.challenges.length) break;
     }
-    state.trackIndex = target;
-    state.challengeIndex = firstUnfinishedIndex(CODEQUEST_DATA.tracks[target]);
+    state.activeTrackId = current.id;
+    const hasProgress = Object.keys(state.progress.completed).length > 0;
+    state.mapSubview = hasProgress ? "path" : "overview";
   }
 
   initState();
-  renderAll();
+  showMapView();
 })();
