@@ -57,6 +57,16 @@ instructions et des indices clairs, adaptés à un public débutant.
 - Merci de tester manuellement le défi ajouté (le vérifier en local dans le
   navigateur) avant d'ouvrir la pull request.
 
+## Casser le cache après une modification
+
+`index.html` charge `css/style.css`, `js/data.js`, `js/sound.js` et
+`js/app.js` avec un paramètre `?v=N`. GitHub Pages ne renomme jamais ces
+fichiers, donc sans ce paramètre les navigateurs (et le CDN) peuvent garder
+en cache une ancienne version d'un seul de ces fichiers après un déploiement,
+et mélanger un `data.js` périmé avec un `app.js` à jour — ce qui casse le
+jeu de façon difficile à reproduire. Si tu modifies l'un de ces fichiers,
+incrémente le `?v=N` de tous ses `<script>`/`<link>` dans `index.html`.
+
 ## Pull requests
 
 - Décris clairement ce que change ta PR et pourquoi.
