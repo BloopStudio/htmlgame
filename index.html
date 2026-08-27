@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeQuest — Apprends à coder en HTML, CSS, JS et PHP</title>
+<meta name="description" content="Jeu interactif gratuit pour apprendre à coder en HTML, CSS, JavaScript et PHP directement dans le navigateur.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-icon">🕹️</span>
+    <span class="brand-name">CodeQuest</span>
+  </div>
+  <div class="xp-bar" title="Expérience totale">
+    <span class="xp-label">XP : <strong id="xp-value">0</strong></span>
+    <div class="xp-track"><div class="xp-fill" id="xp-fill"></div></div>
+  </div>
+</header>
+
+<main class="app-main">
+  <nav id="sidebar" class="sidebar" aria-label="Parcours d'apprentissage"></nav>
+  <section id="challenge" class="challenge" aria-live="polite"></section>
+</main>
+
+<footer class="app-footer">
+  <p>
+    CodeQuest est un projet pédagogique open source pour apprendre à coder.
+    Le code fonctionne entièrement dans ton navigateur (HTML/CSS/JS) ;
+    un petit backend PHP optionnel (dossier <code>php/</code>) permet de
+    sauvegarder ta progression si le site est servi par un serveur PHP.
+  </p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

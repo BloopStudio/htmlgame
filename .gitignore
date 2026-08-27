@@ -1,0 +1,6 @@
+# Progression des joueurs sauvegardée localement par le backend PHP optionnel
+php/data/progress/*.json
+
+# Fichiers système
+.DS_Store
+Thumbs.db
