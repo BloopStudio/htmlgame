@@ -8,14 +8,14 @@ CodeQuest est un jeu d'aventure web gratuit et open source pour **apprendre à c
 
 ## Comment ça marche
 
-Le jeu propose 4 royaumes de 12 défis chacun (48 au total), à conquérir dans l'ordre sur la carte :
+Le jeu propose 4 royaumes (86 défis au total), à conquérir dans l'ordre sur la carte :
 
 | Royaume | Langage | Contenu | Format des défis |
 |---|---|---|---|
-| 🧱 Le Village des Balises | HTML | Balises, listes, tableaux, formulaires, conteneurs | Écris du HTML, testé en direct sur le DOM |
-| 🎨 La Forêt des Couleurs | CSS | Couleurs, boîte de modèle, bordures, Flexbox | Écris du CSS, testé via les styles calculés |
-| ⚡ La Montagne de la Logique | JavaScript | Fonctions, conditions, boucles, tableaux | Écris une fonction, testée avec plusieurs cas |
-| 🐘 La Citadelle du Serveur | PHP | Variables, types, boucles, tableaux, fonctions | Questions à choix multiples (voir pourquoi ci-dessous) |
+| 🧱 Le Village des Balises (22 défis) | HTML | Structure d'une page, titre/favicon, balises de texte, listes, tableaux, formulaires (input, select, checkbox), sémantique HTML5, meta viewport | Écris du HTML, testé en direct sur le DOM |
+| 🎨 La Forêt des Couleurs (20 défis) | CSS | Couleurs, typographie, boîte de modèle, bordures, Flexbox, Grid, position, sélecteurs, variables CSS | Écris du CSS, testé via les styles calculés (+ quelques quiz pour :hover et les unités) |
+| ⚡ La Montagne de la Logique (22 défis) | JavaScript | Fonctions, conditions, boucles, tableaux, objets, template literals, map/filter/reduce, **manipulation réelle du DOM** (texte, clic) | Écris une fonction (ou un script), testé avec plusieurs cas ou sur un vrai mini-DOM |
+| 🐘 La Citadelle du Serveur (22 défis) | PHP | Variables, types, opérateurs, boucles, tableaux, fonctions, superglobales, include, POO basique | Questions à choix multiples (voir pourquoi ci-dessous) |
 
 Chaque défi commence par une courte **leçon** (📘, avec explication et exemple) avant l'exercice : les parcours sont construits pour introduire un seul concept nouveau à la fois, en s'appuyant sur les précédents. À l'intérieur d'un royaume, les défis se débloquent un par un, façon jeu mobile : impossible de sauter une étape.
 
@@ -71,7 +71,15 @@ php/api/             Backend optionnel (sauvegarde de progression)
 
 ## Ajouter un nouveau défi
 
-Tous les défis sont définis dans [`js/data.js`](js/data.js), dans le tableau `CODEQUEST_DATA.tracks` (un royaume = un `track`, avec son `worldName` et sa couleur `theme`). Chaque royaume a un tableau `challenges`, avec un `type` (`html`, `css`, `js` ou `quiz`) qui détermine la façon dont il est validé, et un champ `lesson` (courte explication + exemple) affiché avant l'énoncé — voir les exemples existants et [`js/app.js`](js/app.js) pour le détail de la validation. Les badges à débloquer sont définis dans `CODEQUEST_BADGES`, et les messages de la mascotte dans `CODEQUEST_MASCOT`, dans le même fichier.
+Tous les défis sont définis dans [`js/data.js`](js/data.js), dans le tableau `CODEQUEST_DATA.tracks` (un royaume = un `track`, avec son `worldName` et sa couleur `theme`). Chaque royaume a un tableau `challenges`, avec un `type` qui détermine la façon dont il est validé, et un champ `lesson` (courte explication + exemple) affiché avant l'énoncé :
+
+- `"html"` : le joueur écrit du HTML, testé via `test(document)` sur le DOM rendu dans un iframe sandboxée.
+- `"css"` : le joueur écrit du CSS appliqué à un `baseHtml` fixe, testé via `test(window, document)` sur les styles calculés.
+- `"js"` : le joueur écrit une fonction (`functionName`), testée par une liste de `tests` (`args`/`expected`), exécutée de façon isolée dans une iframe sandboxée sans accès à la page.
+- `"domjs"` : le joueur écrit un script qui manipule un vrai mini-DOM (`baseHtml`), validé par des `checks` déclaratifs (`selector`/`property`/`expected`) ; un champ `interact` optionnel simule une interaction (ex: un clic) avant la vérification.
+- `"quiz"` : question à choix multiples (utilisé pour PHP, et pour quelques notions CSS non testables en direct comme `:hover`), avec `code`, `question`, `options` et l'index `correct`.
+
+Voir les exemples existants et [`js/app.js`](js/app.js) pour le détail de la validation. Les badges à débloquer sont définis dans `CODEQUEST_BADGES`, et les messages de la mascotte dans `CODEQUEST_MASCOT`, dans le même fichier.
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour proposer une contribution.
 

@@ -25,6 +25,65 @@ const CODEQUEST_DATA = {
         {
           id: "html-01",
           type: "html",
+          title: "La structure d'une page",
+          lesson:
+            "Toute page HTML suit le même squelette : <code>&lt;!DOCTYPE html&gt;</code> tout en haut (indique au navigateur que c'est du HTML moderne), une balise <code>&lt;html&gt;</code> qui englobe tout, un <code>&lt;head&gt;</code> (informations invisibles sur la page) et un <code>&lt;body&gt;</code> (tout ce qui est visible à l'écran).",
+          instructions:
+            'Écris une page complète : <code>&lt;!DOCTYPE html&gt;</code>, une balise <code>&lt;html&gt;</code>, un <code>&lt;head&gt;</code>, et un <code>&lt;body&gt;</code> contenant exactement le texte <strong>Ma première page</strong>.',
+          starter: "<!-- Écris ta page complète ici -->\n",
+          hint: "&lt;!DOCTYPE html&gt;\n&lt;html&gt;\n&lt;head&gt;&lt;/head&gt;\n&lt;body&gt;\n  Ma première page\n&lt;/body&gt;\n&lt;/html&gt;",
+          xp: 10,
+          test(doc) {
+            if (doc.compatMode !== "CSS1Compat") {
+              return { pass: false, message: "Il manque le <!DOCTYPE html> tout en haut de la page (ou il est mal placé)." };
+            }
+            if (!doc.body || doc.body.textContent.trim() !== "Ma première page") {
+              return { pass: false, message: 'Le contenu du <body> doit être exactement "Ma première page".' };
+            }
+            return { pass: true, message: "Ta première page HTML complète est valide, bravo !" };
+          },
+        },
+        {
+          id: "html-02",
+          type: "html",
+          title: "Le titre de l'onglet",
+          lesson:
+            "La balise <code>&lt;title&gt;</code> se place dans le <code>&lt;head&gt;</code>. Contrairement à <code>&lt;h1&gt;</code>, elle n'apparaît pas dans la page : elle s'affiche dans l'onglet du navigateur, les favoris et les résultats de recherche.",
+          instructions:
+            "Ajoute un <code>&lt;head&gt;</code> contenant un <code>&lt;title&gt;</code> avec exactement le texte : <strong>Mon Super Site</strong>",
+          starter: "<!-- Ajoute un <head> avec un <title> -->\n",
+          hint: "&lt;head&gt;\n  &lt;title&gt;Mon Super Site&lt;/title&gt;\n&lt;/head&gt;",
+          xp: 10,
+          test(doc) {
+            if (doc.title.trim() !== "Mon Super Site") {
+              return { pass: false, message: 'Le titre de l\'onglet doit être exactement "Mon Super Site".' };
+            }
+            return { pass: true, message: "Ton onglet affiche maintenant un vrai titre !" };
+          },
+        },
+        {
+          id: "html-03",
+          type: "html",
+          title: "Le logo de l'onglet (favicon)",
+          lesson:
+            "La petite icône affichée dans l'onglet, à côté du titre, s'appelle le <strong>favicon</strong>. On l'ajoute dans le <code>&lt;head&gt;</code> avec <code>&lt;link rel=\"icon\" href=\"...\"&gt;</code>, en indiquant le chemin vers une image.",
+          instructions:
+            'Ajoute dans un <code>&lt;head&gt;</code> une balise <code>&lt;link rel="icon" href="..."&gt;</code> pointant vers une image (n\'importe quel nom de fichier).',
+          starter: "<!-- Ajoute un <head> avec un favicon -->\n",
+          hint: '&lt;head&gt;\n  &lt;link rel="icon" href="logo.png"&gt;\n&lt;/head&gt;',
+          xp: 10,
+          test(doc) {
+            const link = doc.querySelector('link[rel="icon"]');
+            if (!link) return { pass: false, message: 'Aucune balise <link rel="icon"> trouvée.' };
+            if (!link.getAttribute("href")) {
+              return { pass: false, message: "Le favicon doit avoir un attribut href pointant vers une image." };
+            }
+            return { pass: true, message: "Ta page a maintenant son propre logo d'onglet !" };
+          },
+        },
+        {
+          id: "html-04",
+          type: "html",
           title: "Ton premier titre",
           lesson:
             "Une page HTML est construite avec des <strong>balises</strong>. La balise <code>&lt;h1&gt;</code> sert à écrire le titre principal d'une page (il ne devrait y en avoir qu'un seul). Exemple : <code>&lt;h1&gt;Mon site&lt;/h1&gt;</code>.",
@@ -43,7 +102,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-02",
+          id: "html-05",
           type: "html",
           title: "Ton premier paragraphe",
           lesson:
@@ -63,7 +122,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-03",
+          id: "html-06",
           type: "html",
           title: "Un sous-titre",
           lesson:
@@ -83,7 +142,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-04",
+          id: "html-07",
           type: "html",
           title: "Mettre en valeur du texte",
           lesson:
@@ -107,7 +166,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-05",
+          id: "html-08",
           type: "html",
           title: "Un lien vers l'extérieur",
           lesson:
@@ -127,7 +186,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-06",
+          id: "html-09",
           type: "html",
           title: "Ajoute une image",
           lesson:
@@ -147,7 +206,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-07",
+          id: "html-10",
           type: "html",
           title: "Liste de courses",
           lesson:
@@ -167,7 +226,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-08",
+          id: "html-11",
           type: "html",
           title: "Étapes numérotées",
           lesson:
@@ -187,7 +246,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-09",
+          id: "html-12",
           type: "html",
           title: "Un tableau simple",
           lesson:
@@ -207,7 +266,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-10",
+          id: "html-13",
           type: "html",
           title: "Formulaire de contact",
           lesson:
@@ -226,7 +285,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-11",
+          id: "html-14",
           type: "html",
           title: "Une zone de texte",
           lesson:
@@ -245,7 +304,7 @@ const CODEQUEST_DATA = {
           },
         },
         {
-          id: "html-12",
+          id: "html-15",
           type: "html",
           title: "Conteneurs et classes",
           lesson:
@@ -263,6 +322,149 @@ const CODEQUEST_DATA = {
               return { pass: false, message: "Le <div> doit contenir un <span> avec du texte." };
             }
             return { pass: true, message: "Ta carte est prête à être stylisée en CSS !" };
+          },
+        },
+        {
+          id: "html-16",
+          type: "html",
+          title: "Un commentaire dans le code",
+          lesson:
+            "Un commentaire <code>&lt;!-- ... --&gt;</code> permet de laisser une note dans le code, invisible sur la page rendue. Utile pour t'expliquer une partie du code, ou désactiver temporairement un morceau.",
+          instructions:
+            "Ajoute un commentaire HTML (n'importe lequel) ainsi qu'un <code>&lt;p&gt;</code> contenant le texte : <strong>Visible</strong>",
+          starter: "<!-- Ajoute ton commentaire et ton paragraphe ici -->\n",
+          hint: "&lt;!-- Ceci est un commentaire --&gt;\n&lt;p&gt;Visible&lt;/p&gt;",
+          xp: 15,
+          test(doc) {
+            const walker = doc.createTreeWalker(doc, NodeFilter.SHOW_COMMENT);
+            if (!walker.nextNode()) {
+              return { pass: false, message: "Aucun commentaire HTML trouvé (utilise <!-- -->)." };
+            }
+            const p = doc.querySelector("p");
+            if (!p || p.textContent.trim() !== "Visible") {
+              return { pass: false, message: 'Il faut aussi un <p> contenant exactement "Visible".' };
+            }
+            return { pass: true, message: "Ton commentaire est bien là, invisible sur la page !" };
+          },
+        },
+        {
+          id: "html-17",
+          type: "html",
+          title: "Identifiants et classes",
+          lesson:
+            "L'attribut <code>id</code> identifie un élément de façon <strong>unique</strong> sur la page (un seul élément par id). L'attribut <code>class</code>, lui, peut être réutilisé sur <strong>plusieurs</strong> éléments pour leur appliquer le même style.",
+          instructions:
+            'Crée deux <code>&lt;div class="carte"&gt;</code>, et donne à l\'un des deux, en plus, un <code>id="principal"</code>.',
+          starter: "<!-- Ajoute tes deux div ici -->\n",
+          hint: '&lt;div class="carte" id="principal"&gt;Une&lt;/div&gt;\n&lt;div class="carte"&gt;Deux&lt;/div&gt;',
+          xp: 15,
+          test(doc) {
+            const cartes = doc.querySelectorAll(".carte");
+            if (cartes.length < 2) {
+              return { pass: false, message: 'Il faut au moins 2 éléments avec class="carte".' };
+            }
+            if (!doc.getElementById("principal")) {
+              return { pass: false, message: 'Aucun élément avec id="principal" trouvé.' };
+            }
+            return { pass: true, message: "Tu maîtrises la différence entre id et class !" };
+          },
+        },
+        {
+          id: "html-18",
+          type: "html",
+          title: "Structurer une page (header, main, footer)",
+          lesson:
+            "HTML5 propose des balises <strong>sémantiques</strong> pour structurer une page : <code>&lt;header&gt;</code> (en-tête), <code>&lt;main&gt;</code> (contenu principal) et <code>&lt;footer&gt;</code> (pied de page), plus claires que des <code>&lt;div&gt;</code> génériques.",
+          instructions:
+            "Crée un <code>&lt;header&gt;</code>, un <code>&lt;main&gt;</code> et un <code>&lt;footer&gt;</code>, chacun avec un peu de texte à l'intérieur.",
+          starter: "<!-- Ajoute tes trois sections ici -->\n",
+          hint: "&lt;header&gt;Mon site&lt;/header&gt;\n&lt;main&gt;Contenu principal&lt;/main&gt;\n&lt;footer&gt;© 2026&lt;/footer&gt;",
+          xp: 20,
+          test(doc) {
+            const header = doc.querySelector("header");
+            const main = doc.querySelector("main");
+            const footer = doc.querySelector("footer");
+            if (!header || !header.textContent.trim()) return { pass: false, message: "Il manque un <header> avec du texte." };
+            if (!main || !main.textContent.trim()) return { pass: false, message: "Il manque un <main> avec du texte." };
+            if (!footer || !footer.textContent.trim()) return { pass: false, message: "Il manque un <footer> avec du texte." };
+            return { pass: true, message: "Ta page est bien structurée sémantiquement !" };
+          },
+        },
+        {
+          id: "html-19",
+          type: "html",
+          title: "Un menu de navigation",
+          lesson:
+            "La balise <code>&lt;nav&gt;</code> regroupe les liens de navigation principaux d'un site (menu). Elle contient généralement plusieurs <code>&lt;a&gt;</code>.",
+          instructions: "Crée un <code>&lt;nav&gt;</code> contenant au moins un lien <code>&lt;a&gt;</code>.",
+          starter: "<!-- Ajoute ton menu ici -->\n",
+          hint: '&lt;nav&gt;\n  &lt;a href="#accueil"&gt;Accueil&lt;/a&gt;\n&lt;/nav&gt;',
+          xp: 15,
+          test(doc) {
+            const nav = doc.querySelector("nav");
+            if (!nav) return { pass: false, message: "Aucune balise <nav> trouvée." };
+            if (!nav.querySelector("a")) return { pass: false, message: "Le <nav> doit contenir au moins un lien <a>." };
+            return { pass: true, message: "Ton menu de navigation est prêt !" };
+          },
+        },
+        {
+          id: "html-20",
+          type: "html",
+          title: "Une liste déroulante",
+          lesson:
+            "Un menu déroulant se crée avec <code>&lt;select&gt;</code>, qui contient plusieurs <code>&lt;option&gt;</code> parmi lesquelles choisir.",
+          instructions: "Crée un <code>&lt;select&gt;</code> contenant au moins 2 <code>&lt;option&gt;</code>.",
+          starter: "<!-- Ajoute ta liste déroulante ici -->\n",
+          hint: "&lt;select&gt;\n  &lt;option&gt;Rouge&lt;/option&gt;\n  &lt;option&gt;Bleu&lt;/option&gt;\n&lt;/select&gt;",
+          xp: 15,
+          test(doc) {
+            const options = doc.querySelectorAll("select option");
+            if (options.length < 2) {
+              return { pass: false, message: "Il faut un <select> avec au moins 2 <option>." };
+            }
+            return { pass: true, message: "Ta liste déroulante fonctionne !" };
+          },
+        },
+        {
+          id: "html-21",
+          type: "html",
+          title: "Une case à cocher étiquetée",
+          lesson:
+            'Une case à cocher s\'écrit <code>&lt;input type="checkbox"&gt;</code>. Pour qu\'un clic sur le texte coche aussi la case, on relie un <code>&lt;label&gt;</code> à elle avec <code>for="identifiant"</code>, qui doit correspondre à l\'<code>id</code> de la case.',
+          instructions:
+            'Crée un <code>&lt;input type="checkbox" id="cgu"&gt;</code> et un <code>&lt;label for="cgu"&gt;</code> avec du texte.',
+          starter: "<!-- Ajoute ta case à cocher et son label ici -->\n",
+          hint: '&lt;input type="checkbox" id="cgu"&gt;\n&lt;label for="cgu"&gt;J\'accepte&lt;/label&gt;',
+          xp: 20,
+          test(doc) {
+            const checkbox = doc.querySelector('input[type="checkbox"][id]');
+            if (!checkbox) return { pass: false, message: 'Aucun <input type="checkbox"> avec un id trouvé.' };
+            const label = doc.querySelector(`label[for="${checkbox.id}"]`);
+            if (!label || !label.textContent.trim()) {
+              return { pass: false, message: "Le <label> doit avoir un attribut for correspondant à l'id de la case." };
+            }
+            return { pass: true, message: "Ta case à cocher est correctement reliée à son label !" };
+          },
+        },
+        {
+          id: "html-22",
+          type: "html",
+          title: "Une page adaptée aux mobiles",
+          lesson:
+            'La balise <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code>, placée dans le <code>&lt;head&gt;</code>, indique au navigateur mobile d\'afficher la page à sa vraie largeur d\'écran, plutôt que zoomée. Indispensable pour un site responsive.',
+          instructions:
+            'Ajoute dans un <code>&lt;head&gt;</code> la balise <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code>.',
+          starter: "<!-- Ajoute ton head avec la balise viewport -->\n",
+          hint: '&lt;head&gt;\n  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;\n&lt;/head&gt;',
+          xp: 15,
+          test(doc) {
+            const meta = doc.querySelector('meta[name="viewport"]');
+            if (!meta) return { pass: false, message: 'Aucune balise <meta name="viewport"> trouvée.' };
+            const content = meta.getAttribute("content") || "";
+            if (!content.includes("width=device-width")) {
+              return { pass: false, message: 'Le content doit inclure "width=device-width".' };
+            }
+            return { pass: true, message: "Ta page est prête pour les écrans mobiles !" };
           },
         },
       ],
@@ -507,6 +709,156 @@ const CODEQUEST_DATA = {
             return { pass: false, message: `flex-direction actuel : "${direction}", essaie flex-direction: column;` };
           },
         },
+        {
+          id: "css-13",
+          type: "css",
+          title: "Sélecteur de classe",
+          lesson:
+            "Un sélecteur de classe commence par un point : <code>.carte</code> cible <strong>tous</strong> les éléments portant <code>class=\"carte\"</code>, contrairement à <code>#target</code> qui ne cible qu'un seul élément (son id).",
+          instructions: "Utilise le sélecteur <code>.carte</code> pour donner à toutes les cartes un fond <code>#333</code>.",
+          baseHtml: '<div class="carte">Une</div><div class="carte">Deux</div>',
+          starter: ".carte {\n  /* ta règle ici */\n}\n",
+          hint: ".carte {\n  background-color: #333;\n}",
+          xp: 15,
+          test(win, doc) {
+            const cartes = doc.querySelectorAll(".carte");
+            if (cartes.length < 2) return { pass: false, message: "Les deux cartes doivent être présentes." };
+            const allStyled = Array.from(cartes).every((el) => win.getComputedStyle(el).backgroundColor === "rgb(51, 51, 51)");
+            if (!allStyled) return { pass: false, message: "Toutes les .carte doivent avoir le fond #333." };
+            return { pass: true, message: "Un seul sélecteur pour styliser toutes les cartes, bien joué !" };
+          },
+        },
+        {
+          id: "css-14",
+          type: "css",
+          title: "Sélecteur descendant",
+          lesson:
+            "En combinant deux sélecteurs séparés par un espace, comme <code>#container p</code>, on cible uniquement les <code>&lt;p&gt;</code> qui se trouvent <strong>à l'intérieur</strong> de <code>#container</code>, pas les autres.",
+          instructions: "Utilise le sélecteur descendant <code>#container p</code> pour mettre le texte en bleu.",
+          baseHtml: '<div id="container"><p id="target">Texte à l\'intérieur</p></div>',
+          starter: "#container p {\n  /* ta règle ici */\n}\n",
+          hint: "#container p {\n  color: blue;\n}",
+          xp: 15,
+          test(win, doc) {
+            const el = doc.getElementById("target");
+            const color = win.getComputedStyle(el).color;
+            if (color === "rgb(0, 0, 255)") return { pass: true, message: "Ton sélecteur descendant fonctionne !" };
+            return { pass: false, message: `Couleur actuelle : ${color}, essaie #container p { color: blue; }` };
+          },
+        },
+        {
+          id: "css-15",
+          type: "css",
+          title: "Positionnement absolu",
+          lesson:
+            "Avec <code>position: relative;</code> sur un conteneur et <code>position: absolute;</code> sur un enfant, l'enfant se positionne précisément grâce à <code>top</code>/<code>left</code>, par rapport à ce conteneur (et non plus par rapport à toute la page).",
+          instructions:
+            "Positionne <code>#target</code> en <code>absolute</code>, à 10px du haut et 10px de la gauche de <code>#container</code>.",
+          baseHtml:
+            '<div id="container" style="position:relative;width:200px;height:150px;border:2px solid #888;"><div id="target">Coin</div></div>',
+          starter: "#target {\n  /* ta règle ici */\n}\n",
+          hint: "position: absolute;\ntop: 10px;\nleft: 10px;",
+          xp: 20,
+          test(win, doc) {
+            const el = doc.getElementById("target");
+            const style = win.getComputedStyle(el);
+            if (style.position !== "absolute") return { pass: false, message: "#target doit avoir position: absolute;" };
+            if (parseFloat(style.top) !== 10) return { pass: false, message: "top doit valoir 10px." };
+            if (parseFloat(style.left) !== 10) return { pass: false, message: "left doit valoir 10px." };
+            return { pass: true, message: "Positionnement précis, parfait !" };
+          },
+        },
+        {
+          id: "css-16",
+          type: "css",
+          title: "Une ombre portée",
+          lesson:
+            "La propriété <code>box-shadow</code> ajoute une ombre autour d'un élément : <code>box-shadow: décalageX décalageY flou couleur;</code>. Ça donne un effet de relief.",
+          instructions: "Ajoute une ombre portée (box-shadow) à <code>#target</code>, n'importe laquelle.",
+          baseHtml: '<div id="target" style="width:100px;height:60px;background:white;"></div>',
+          starter: "#target {\n  /* ta règle ici */\n}\n",
+          hint: "box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);",
+          xp: 15,
+          test(win, doc) {
+            const el = doc.getElementById("target");
+            const shadow = win.getComputedStyle(el).boxShadow;
+            if (!shadow || shadow === "none") return { pass: false, message: "Ajoute une valeur de box-shadow." };
+            return { pass: true, message: "Une belle ombre qui donne du relief !" };
+          },
+        },
+        {
+          id: "css-17",
+          type: "quiz",
+          title: "Survol et transition",
+          lesson:
+            "La pseudo-classe <code>:hover</code> applique un style seulement quand la souris survole un élément. Associée à <code>transition</code>, le changement se fait en douceur plutôt que d'un coup.",
+          code: "#bouton {\n  background-color: blue;\n  transition: background-color 0.3s;\n}\n#bouton:hover {\n  background-color: red;\n}",
+          question: "Que se passe-t-il quand la souris survole #bouton ?",
+          options: [
+            "Le fond passe du bleu au rouge, en douceur sur 0.3 seconde",
+            "Le fond devient rouge instantanément, sans transition",
+            "Seul le texte devient rouge",
+            "Rien, :hover ne fonctionne qu'en JavaScript",
+          ],
+          correct: 0,
+          hint: "transition indique au navigateur d'animer le changement de background-color plutôt que de le faire brutalement.",
+          xp: 15,
+        },
+        {
+          id: "css-18",
+          type: "quiz",
+          title: "Unités px, em et rem",
+          lesson:
+            "<code>px</code> est une taille fixe. <code>em</code> est relatif à la taille de police de l'élément parent. <code>rem</code> est relatif à la taille de police de la racine <code>&lt;html&gt;</code>, ce qui le rend plus prévisible.",
+          code: "html {\n  font-size: 16px;\n}\n.texte {\n  font-size: 2rem;\n}",
+          question: "Quelle sera la taille de police de .texte ?",
+          options: ["32px (2 × 16px)", "16px", "2px", "Cela dépend uniquement du parent direct de .texte"],
+          correct: 0,
+          hint: "rem se base toujours sur la taille de police de <html>, ici 16px.",
+          xp: 15,
+        },
+        {
+          id: "css-19",
+          type: "css",
+          title: "Variables CSS",
+          lesson:
+            "On peut déclarer sa propre variable avec <code>--nom-de-variable: valeur;</code>, puis la réutiliser avec <code>var(--nom-de-variable)</code>. Pratique pour répéter une même couleur à plusieurs endroits.",
+          instructions:
+            "Sur <code>#target</code>, déclare une variable <code>--ma-couleur: blue;</code> puis utilise-la avec <code>color: var(--ma-couleur);</code>",
+          baseHtml: '<div id="target">Texte à colorier</div>',
+          starter: "#target {\n  /* déclare et utilise ta variable ici */\n}\n",
+          hint: "--ma-couleur: blue;\ncolor: var(--ma-couleur);",
+          xp: 20,
+          test(win, doc) {
+            const el = doc.getElementById("target");
+            const color = win.getComputedStyle(el).color;
+            if (color === "rgb(0, 0, 255)") return { pass: true, message: "Ta variable CSS fonctionne parfaitement !" };
+            return { pass: false, message: `Couleur actuelle : ${color}, la variable doit donner du bleu.` };
+          },
+        },
+        {
+          id: "css-20",
+          type: "css",
+          title: "Une grille avec CSS Grid",
+          lesson:
+            "<code>display: grid;</code> active une autre mise en page, en grille. <code>grid-template-columns: repeat(2, 1fr);</code> crée 2 colonnes de largeur égale.",
+          instructions: "Transforme <code>#container</code> en grille de 2 colonnes de largeur égale.",
+          baseHtml:
+            '<div id="container" style="border:2px dashed #888;"><div>1</div><div>2</div><div id="target">3</div></div>',
+          starter: "#container {\n  /* ta règle ici */\n}\n",
+          hint: "display: grid;\ngrid-template-columns: repeat(2, 1fr);",
+          xp: 20,
+          test(win, doc) {
+            const el = doc.getElementById("container");
+            const style = win.getComputedStyle(el);
+            if (style.display !== "grid") return { pass: false, message: "#container doit avoir display: grid;" };
+            const cols = style.gridTemplateColumns.trim().split(/\s+/);
+            if (cols.length !== 2) {
+              return { pass: false, message: `Il faut exactement 2 colonnes (trouvé : ${cols.length}).` };
+            }
+            return { pass: true, message: "Ta grille à 2 colonnes est prête !" };
+          },
+        },
       ],
     },
     {
@@ -730,6 +1082,171 @@ const CODEQUEST_DATA = {
             { args: [[-1, -5, 0]], expected: [-5, -1, 0] },
           ],
         },
+        {
+          id: "js-13",
+          type: "js",
+          title: "L'opérateur ternaire",
+          lesson:
+            "L'opérateur ternaire <code>condition ? siVrai : siFaux</code> est une écriture courte d'un if/else, souvent utilisée pour renvoyer directement une valeur.",
+          instructions:
+            'Écris une fonction <code>evaluerAge(age)</code> qui renvoie "majeur" si <code>age</code> est supérieur ou égal à 18, sinon "mineur", en utilisant l\'opérateur ternaire.',
+          functionName: "evaluerAge",
+          starter: "function evaluerAge(age) {\n  // ton code ici (utilise ? :)\n}\n",
+          hint: "return age >= 18 ? 'majeur' : 'mineur';",
+          xp: 15,
+          tests: [
+            { args: [20], expected: "majeur" },
+            { args: [15], expected: "mineur" },
+            { args: [18], expected: "majeur" },
+          ],
+        },
+        {
+          id: "js-14",
+          type: "js",
+          title: "Le switch",
+          lesson:
+            "<code>switch (valeur) { case x: ...; break; default: ...; }</code> compare une valeur à plusieurs cas possibles, une alternative lisible à une longue série de if/else if.",
+          instructions:
+            'Écris une fonction <code>jourSemaine(n)</code> qui renvoie le nom du jour ("lundi" pour 1, ... "dimanche" pour 7) avec un switch, et "inconnu" pour toute autre valeur.',
+          functionName: "jourSemaine",
+          starter: "function jourSemaine(n) {\n  switch (n) {\n    // tes cas ici\n    default:\n      return 'inconnu';\n  }\n}\n",
+          hint:
+            "switch (n) {\n  case 1: return 'lundi';\n  case 7: return 'dimanche';\n  default: return 'inconnu';\n}",
+          xp: 20,
+          tests: [
+            { args: [1], expected: "lundi" },
+            { args: [7], expected: "dimanche" },
+            { args: [9], expected: "inconnu" },
+          ],
+        },
+        {
+          id: "js-15",
+          type: "js",
+          title: "Destructuration de tableau",
+          lesson:
+            "La destructuration permet d'extraire des valeurs d'un tableau directement dans des variables : <code>const [premier, ...reste] = tableau;</code> range le premier élément dans <code>premier</code>, et tous les autres dans le tableau <code>reste</code>.",
+          instructions:
+            "Écris une fonction <code>premierEtDernier(tableau)</code> qui renvoie un tableau <code>[premier, dernier]</code> en utilisant la destructuration.",
+          functionName: "premierEtDernier",
+          starter: "function premierEtDernier(tableau) {\n  // utilise la destructuration ici\n}\n",
+          hint: "const [premier, ...reste] = tableau;\nreturn [premier, reste.length ? reste[reste.length - 1] : premier];",
+          xp: 20,
+          tests: [
+            { args: [[1, 2, 3, 4]], expected: [1, 4] },
+            { args: [[5, 10]], expected: [5, 10] },
+            { args: [[7]], expected: [7, 7] },
+          ],
+        },
+        {
+          id: "js-16",
+          type: "js",
+          title: "Propriétés d'un objet",
+          lesson:
+            "Un objet regroupe des données liées sous forme de propriétés : <code>{ nom: 'Léo', age: 12 }</code>. On accède à une propriété avec un point : <code>personne.nom</code>.",
+          instructions:
+            'Écris une fonction <code>presenter(personne)</code> qui renvoie exactement : "NOM a AGE ans." (ex: "Léo a 12 ans.") à partir d\'un objet <code>{ nom, age }</code>.',
+          functionName: "presenter",
+          starter: "function presenter(personne) {\n  // ton code ici\n}\n",
+          hint: "return personne.nom + ' a ' + personne.age + ' ans.';",
+          xp: 20,
+          tests: [
+            { args: [{ nom: "Léo", age: 12 }], expected: "Léo a 12 ans." },
+            { args: [{ nom: "Zoé", age: 9 }], expected: "Zoé a 9 ans." },
+          ],
+        },
+        {
+          id: "js-17",
+          type: "js",
+          title: "Les template literals",
+          lesson:
+            "Entre <strong>accents graves</strong> (`` ` ``) plutôt que des guillemets, on peut insérer directement des variables dans un texte avec <code>${...}</code> : <code>`Bonjour, ${prenom} !`</code>. Plus lisible que d'enchaîner des <code>+</code>.",
+          instructions:
+            "Écris une fonction <code>saluer(prenom)</code> qui renvoie exactement : \"Bonjour, PRENOM !\" en utilisant un template literal.",
+          functionName: "saluer",
+          starter: "function saluer(prenom) {\n  // utilise un template literal ici\n}\n",
+          hint: "return `Bonjour, ${prenom} !`;",
+          xp: 15,
+          tests: [
+            { args: ["Léo"], expected: "Bonjour, Léo !" },
+            { args: ["Zoé"], expected: "Bonjour, Zoé !" },
+          ],
+        },
+        {
+          id: "js-18",
+          type: "js",
+          title: "Transformer un tableau avec map",
+          lesson:
+            "<code>tableau.map(fonction)</code> crée un <strong>nouveau</strong> tableau en appliquant une fonction à chaque élément, sans avoir à écrire de boucle explicite.",
+          instructions: "Écris une fonction <code>doubler(tableau)</code> qui renvoie un tableau avec chaque nombre doublé, en utilisant <code>.map()</code>.",
+          functionName: "doubler",
+          starter: "function doubler(tableau) {\n  // utilise .map() ici\n}\n",
+          hint: "return tableau.map((n) => n * 2);",
+          xp: 20,
+          tests: [
+            { args: [[1, 2, 3]], expected: [2, 4, 6] },
+            { args: [[0, -1]], expected: [0, -2] },
+          ],
+        },
+        {
+          id: "js-19",
+          type: "js",
+          title: "Filtrer un tableau avec filter",
+          lesson:
+            "<code>tableau.filter(fonction)</code> crée un nouveau tableau ne gardant que les éléments pour lesquels la fonction renvoie <code>true</code>.",
+          instructions: "Écris une fonction <code>nombresPositifs(tableau)</code> qui renvoie uniquement les nombres strictement positifs, avec <code>.filter()</code>.",
+          functionName: "nombresPositifs",
+          starter: "function nombresPositifs(tableau) {\n  // utilise .filter() ici\n}\n",
+          hint: "return tableau.filter((n) => n > 0);",
+          xp: 20,
+          tests: [
+            { args: [[-2, 3, 0, 5, -1]], expected: [3, 5] },
+            { args: [[1, 2, 3]], expected: [1, 2, 3] },
+          ],
+        },
+        {
+          id: "js-20",
+          type: "js",
+          title: "Cumuler avec reduce",
+          lesson:
+            "<code>tableau.reduce((accumulateur, valeur) =&gt; ..., valeurInitiale)</code> parcourt le tableau en accumulant un résultat unique, comme une somme ou un total — une autre façon d'écrire la fonction <code>somme</code> vue plus tôt, sans boucle explicite.",
+          instructions: "Écris une fonction <code>total(tableau)</code> qui renvoie la somme du tableau en utilisant <code>.reduce()</code>.",
+          functionName: "total",
+          starter: "function total(tableau) {\n  // utilise .reduce() ici\n}\n",
+          hint: "return tableau.reduce((acc, n) => acc + n, 0);",
+          xp: 20,
+          tests: [
+            { args: [[1, 2, 3]], expected: 6 },
+            { args: [[]], expected: 0 },
+          ],
+        },
+        {
+          id: "js-21",
+          type: "domjs",
+          title: "Modifier le DOM : le texte",
+          lesson:
+            "<code>document.getElementById('id')</code> récupère un élément réel de la page. On peut alors changer ce qui s'affiche en modifiant sa propriété <code>.textContent</code>, en direct, sans recharger la page.",
+          instructions: "Change le texte de l'élément <code>#msg</code> en exactement : <strong>Texte modifié !</strong>",
+          baseHtml: '<p id="msg">Texte original</p>',
+          starter: "// Modifie le texte de l'élément #msg ici\n",
+          hint: "document.getElementById('msg').textContent = 'Texte modifié !';",
+          xp: 20,
+          checks: [{ selector: "#msg", property: "textContent", expected: "Texte modifié !" }],
+        },
+        {
+          id: "js-22",
+          type: "domjs",
+          title: "Modifier le DOM : réagir à un clic",
+          lesson:
+            "<code>element.addEventListener('click', fonction)</code> attache une réaction à un clic sur cet élément. C'est ce qui rend une page réellement interactive, au-delà du simple affichage.",
+          instructions: "Ajoute un gestionnaire de clic sur <code>#btn</code> qui change le texte de <code>#msg</code> en exactement : <strong>Cliqué !</strong>",
+          baseHtml: '<button id="btn">Clique-moi</button><p id="msg">En attente...</p>',
+          starter: "// Ajoute ton addEventListener ici\n",
+          hint:
+            "document.getElementById('btn').addEventListener('click', function () {\n  document.getElementById('msg').textContent = 'Cliqué !';\n});",
+          xp: 25,
+          interact: "document.getElementById('btn').click();",
+          checks: [{ selector: "#msg", property: "textContent", expected: "Cliqué !" }],
+        },
       ],
     },
     {
@@ -901,6 +1418,141 @@ const CODEQUEST_DATA = {
           correct: 0,
           hint: "carre(4) renvoie 4 * 4.",
           xp: 20,
+        },
+        {
+          id: "php-13",
+          type: "quiz",
+          title: "Longueur d'une chaîne",
+          lesson:
+            "La fonction <code>strlen($chaine)</code> renvoie le nombre de caractères d'une chaîne de texte.",
+          code: '<?php\n$mot = "Bonjour";\necho strlen($mot);\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["7", "Bonjour", "6", "Erreur"],
+          correct: 0,
+          hint: '"Bonjour" contient 7 lettres.',
+          xp: 15,
+        },
+        {
+          id: "php-14",
+          type: "quiz",
+          title: "Majuscules et minuscules",
+          lesson:
+            "<code>strtoupper($chaine)</code> met une chaîne en majuscules, <code>strtolower($chaine)</code> en minuscules — l'équivalent de <code>.toUpperCase()</code>/<code>.toLowerCase()</code> en JavaScript.",
+          code: '<?php\n$mot = "chat";\necho strtoupper($mot);\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["CHAT", "chat", "Chat", "Erreur"],
+          correct: 0,
+          hint: "strtoupper transforme toutes les lettres en majuscules.",
+          xp: 15,
+        },
+        {
+          id: "php-15",
+          type: "quiz",
+          title: "Ternaire en PHP",
+          lesson:
+            "Comme en JavaScript, PHP possède l'opérateur ternaire <code>condition ? siVrai : siFaux</code>, une écriture courte d'un if/else.",
+          code: '<?php\n$age = 20;\necho ($age >= 18) ? "majeur" : "mineur";\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["majeur", "mineur", "20", "Erreur"],
+          correct: 0,
+          hint: "20 est bien supérieur ou égal à 18.",
+          xp: 15,
+        },
+        {
+          id: "php-16",
+          type: "quiz",
+          title: "Switch en PHP",
+          lesson:
+            "<code>switch ($valeur) { case ...: ...; break; default: ...; }</code> fonctionne comme en JavaScript : ne pas oublier <code>break</code> pour éviter de tomber dans le cas suivant.",
+          code: '<?php\n$note = 2;\nswitch ($note) {\n    case 1:\n        echo "Un";\n        break;\n    case 2:\n        echo "Deux";\n        break;\n    default:\n        echo "Autre";\n}\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["Deux", "Un", "Autre", "Erreur"],
+          correct: 0,
+          hint: "$note vaut 2, donc c'est le case 2 qui s'exécute.",
+          xp: 20,
+        },
+        {
+          id: "php-17",
+          type: "quiz",
+          title: "Incrémenter une variable",
+          lesson:
+            "<code>$variable++;</code> augmente la valeur de 1, <code>$variable--;</code> la diminue de 1 — identique à JavaScript.",
+          code: '<?php\n$compteur = 5;\n$compteur++;\necho $compteur;\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["6", "5", "4", "Erreur"],
+          correct: 0,
+          hint: "$compteur++ ajoute 1 à 5.",
+          xp: 15,
+        },
+        {
+          id: "php-18",
+          type: "quiz",
+          title: "isset() et les valeurs nulles",
+          lesson:
+            "<code>isset($variable)</code> vérifie qu'une variable existe <strong>et</strong> n'est pas <code>null</code>. Une variable qui vaut <code>null</code> est donc considérée comme \"non définie\" par isset().",
+          code: '<?php\n$nom = null;\nif (isset($nom)) {\n    echo "Défini";\n} else {\n    echo "Non défini";\n}\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["Non défini", "Défini", "null", "Erreur"],
+          correct: 0,
+          hint: "$nom vaut null, donc isset($nom) renvoie false.",
+          xp: 20,
+        },
+        {
+          id: "php-19",
+          type: "quiz",
+          title: "Transformer un tableau avec array_map",
+          lesson:
+            "<code>array_map(fonction, $tableau)</code> applique une fonction à chaque élément d'un tableau et renvoie un nouveau tableau — l'équivalent de <code>.map()</code> en JavaScript.",
+          code: '<?php\n$nombres = [1, 2, 3];\n$doubles = array_map(function ($n) {\n    return $n * 2;\n}, $nombres);\nprint_r($doubles);\n?>',
+          question: "Que contient $doubles après cette transformation ?",
+          options: ["[2, 4, 6]", "[1, 2, 3]", "[2]", "Erreur"],
+          correct: 0,
+          hint: "Chaque nombre du tableau est multiplié par 2.",
+          xp: 20,
+        },
+        {
+          id: "php-20",
+          type: "quiz",
+          title: "Récupérer les données d'un formulaire",
+          lesson:
+            "<code>$_POST</code> et <code>$_GET</code> sont des variables superglobales qui contiennent les données envoyées par un formulaire HTML : <code>$_GET</code> via l'URL, <code>$_POST</code> via le corps de la requête (mieux adapté aux données sensibles ou volumineuses).",
+          code: '<!-- formulaire HTML -->\n<form method="post" action="traiter.php">\n  <input type="text" name="pseudo">\n  <button>Envoyer</button>\n</form>\n\n<?php\n// traiter.php\necho $_POST["pseudo"];\n?>',
+          question: "Quelle variable PHP récupère la valeur envoyée par ce formulaire ?",
+          options: ['$_POST["pseudo"]', '$_GET["pseudo"]', "$pseudo", '$_FORM["pseudo"]'],
+          correct: 0,
+          hint: 'Le formulaire a method="post", donc les données arrivent dans $_POST.',
+          xp: 20,
+        },
+        {
+          id: "php-21",
+          type: "quiz",
+          title: "Réutiliser du code avec include",
+          lesson:
+            "<code>include \"fichier.php\";</code> (ou <code>require</code>) insère et exécute le contenu d'un autre fichier PHP à cet endroit précis. Pratique pour réutiliser un en-tête ou un pied de page communs à plusieurs pages.",
+          code: '<?php\n// entete.php\necho "Bienvenue !";\n?>\n\n<?php\n// index.php\ninclude "entete.php";\necho " Voici la page.";\n?>',
+          question: "Que fait include ici ?",
+          options: [
+            "Il insère et exécute le contenu de entete.php à cet endroit",
+            "Il supprime le fichier entete.php",
+            "Il crée une nouvelle page HTML",
+            "Il ne fait rien sans require",
+          ],
+          correct: 0,
+          hint: "include copie-colle et exécute le fichier indiqué, comme s'il était écrit directement ici.",
+          xp: 20,
+        },
+        {
+          id: "php-22",
+          type: "quiz",
+          title: "Une classe toute simple",
+          lesson:
+            'Une <strong>classe</strong> définit un modèle d\'objet, avec des propriétés (<code>public $nom;</code>) et des méthodes (des fonctions). <code>$this</code> représente l\'objet en cours d\'utilisation, et <code>new Classe()</code> en crée une instance.',
+          code: '<?php\nclass Chien {\n    public $nom;\n    function aboyer() {\n        return $this->nom . " dit Wouf !";\n    }\n}\n$rex = new Chien();\n$rex->nom = "Rex";\necho $rex->aboyer();\n?>',
+          question: "Que s'affiche à l'écran ?",
+          options: ["Rex dit Wouf !", "Chien dit Wouf !", "aboyer()", "Erreur"],
+          correct: 0,
+          hint: "$this->nom vaut \"Rex\", puisque $rex->nom a été défini juste avant.",
+          xp: 25,
         },
       ],
     },

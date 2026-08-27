@@ -40,8 +40,17 @@ adapté :
 - `"js"` : le joueur écrit une fonction (`functionName`), validée par une
   liste de `tests` (`args` / `expected`), exécutée de façon isolée dans une
   iframe sandboxée sans accès à la page.
+- `"domjs"` : le joueur écrit un script qui manipule un vrai mini-DOM
+  (`baseHtml`), validé par des `checks` déclaratifs
+  (`{ selector, property, expected }`) relus après exécution ; un champ
+  `interact` optionnel (chaîne de code de confiance, ex: `"document
+  .getElementById('btn').click();"`) simule une interaction avant la
+  vérification. Le script tourne dans une iframe `sandbox="allow-scripts"`
+  isolée (jamais `allow-same-origin` avec du code utilisateur, ce qui
+  casserait l'isolation).
 - `"quiz"` : question à choix multiples (utilisé pour PHP, non exécutable sur
-  GitHub Pages), avec `code`, `question`, `options` et l'index `correct`.
+  GitHub Pages, et pour quelques notions CSS non testables en direct comme
+  `:hover`), avec `code`, `question`, `options` et l'index `correct`.
 
 Chaque défi doit aussi avoir un champ `lesson` : une courte explication (2-3
 phrases) avec un exemple de code, qui introduit **un seul concept nouveau**

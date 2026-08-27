@@ -333,7 +333,7 @@
     const layout = document.createElement("div");
     layout.className = "editor-layout";
 
-    if (challenge.type === "css" && challenge.baseHtml) {
+    if ((challenge.type === "css" || challenge.type === "domjs") && challenge.baseHtml) {
       const baseInfo = document.createElement("div");
       baseInfo.className = "base-html-info";
       baseInfo.innerHTML = `<p class="label">HTML fourni (lecture seule) :</p><pre class="code-block">${escapeHtml(
@@ -346,7 +346,8 @@
     editorWrap.className = "editor-wrap";
     const label = document.createElement("p");
     label.className = "label";
-    label.textContent = challenge.type === "css" ? "Ton CSS :" : challenge.type === "js" ? "Ton JavaScript :" : "Ton HTML :";
+    label.textContent =
+      challenge.type === "css" ? "Ton CSS :" : challenge.type === "js" || challenge.type === "domjs" ? "Ton JavaScript :" : "Ton HTML :";
     editorWrap.appendChild(label);
 
     const textarea = document.createElement("textarea");
@@ -376,7 +377,7 @@
       const iframe = document.createElement("iframe");
       iframe.className = "preview";
       iframe.id = "preview";
-      iframe.setAttribute("sandbox", "allow-same-origin");
+      iframe.setAttribute("sandbox", challenge.type === "domjs" ? "allow-scripts" : "allow-same-origin");
       iframe.title = "Aperçu du rendu";
       previewWrap.appendChild(iframe);
     }
@@ -447,6 +448,9 @@
     } else if (challenge.type === "css") {
       const iframe = document.getElementById("preview");
       if (iframe) iframe.srcdoc = `<style>${code}</style>${challenge.baseHtml}`;
+    } else if (challenge.type === "domjs") {
+      const iframe = document.getElementById("preview");
+      if (iframe) iframe.srcdoc = `${challenge.baseHtml}<script>${code}<\/script>`;
     }
   }
 
@@ -477,6 +481,8 @@
       );
     } else if (challenge.type === "js") {
       runJsChallenge(challenge, code);
+    } else if (challenge.type === "domjs") {
+      runDomJsChallenge(challenge, code);
     }
   }
 
@@ -552,6 +558,74 @@
         }
       })();
     <\/script></body></html>`;
+  }
+
+  function runDomJsChallenge(challenge, code) {
+    updatePreview(challenge, code);
+
+    const harness = buildDomJsHarness(challenge, code);
+
+    const sandbox = document.createElement("iframe");
+    sandbox.setAttribute("sandbox", "allow-scripts");
+    sandbox.style.display = "none";
+    sandbox.srcdoc = harness;
+
+    function onMessage(event) {
+      if (event.source !== sandbox.contentWindow) return;
+      window.removeEventListener("message", onMessage);
+      sandbox.remove();
+
+      const data = event.data;
+      if (data.error) {
+        handleOutcome(false, challenge, "Ton code contient une erreur : " + data.error);
+        return;
+      }
+      const allPass = data.results.every((r) => r.pass);
+      if (allPass) {
+        handleOutcome(true, challenge, "Le DOM a été modifié comme attendu, bravo !");
+      } else {
+        const failed = data.results.find((r) => !r.pass);
+        handleOutcome(
+          false,
+          challenge,
+          `${failed.selector} vaut "${failed.actual}", attendu "${failed.expected}".`
+        );
+      }
+    }
+
+    window.addEventListener("message", onMessage);
+    document.body.appendChild(sandbox);
+  }
+
+  function buildDomJsHarness(challenge, userCode) {
+    const checksJson = JSON.stringify(challenge.checks);
+    const interactCode = challenge.interact || "";
+    return `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>
+      ${challenge.baseHtml}
+      <script>
+        (function () {
+          try {
+            ${userCode}
+            ${interactCode}
+            const checks = ${checksJson};
+            const results = checks.map(function (c) {
+              const el = document.querySelector(c.selector);
+              const actual = el ? el[c.property] : undefined;
+              return {
+                selector: c.selector,
+                property: c.property,
+                expected: c.expected,
+                actual: actual,
+                pass: JSON.stringify(actual) === JSON.stringify(c.expected),
+              };
+            });
+            parent.postMessage({ results: results }, "*");
+          } catch (e) {
+            parent.postMessage({ error: e.message }, "*");
+          }
+        })();
+      <\/script>
+    </body></html>`;
   }
 
   function logConsole(text, cls) {
